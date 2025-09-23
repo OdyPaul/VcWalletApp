@@ -1,47 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import axios from 'axios';
-import { API_URL } from '../config';
-
-
+import { useDispatch, useSelector } from 'react-redux';
+import { login, reset } from '../features/auth/authSlice';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = async () => {
-    try {
-      const res = await axios.post(`${API_URL}/api/users/login`, {
-        email,
-        password,
-        
-      });
-      console.log("Registering at:", `${API_URL}/api/users`);
+  const dispatch = useDispatch();
+  const { user, isError, isSuccess, message } = useSelector(state => state.auth);
 
-      Alert.alert('Login Success', `Welcome ${res.data.name}`);
-      navigation.replace('Home', { token: res.data.token });
-    } catch (error) {
-      Alert.alert('Error', error.response?.data?.message || 'Login failed');
+  useEffect(() => {
+    if (isError) {
+      Alert.alert('Error', message);
+      dispatch(reset());
     }
+
+    if (isSuccess || user) {
+      Alert.alert('Login Success', `Welcome ${user.name}`);
+      dispatch(reset());
+      navigation.replace('MainTabs'); // token is in Redux now
+    }
+  }, [isError, isSuccess, user, message]);
+
+  const handleLogin = () => {
+    dispatch(login({ email, password }));
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
 
-      <TextInput
-        placeholder="Email"
-        style={styles.input}
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        placeholder="Password"
-        style={styles.input}
-        value={password}
-        secureTextEntry
-        onChangeText={setPassword}
-      />
+      <TextInput placeholder="Email" style={styles.input} value={email} onChangeText={setEmail} />
+      <TextInput placeholder="Password" style={styles.input} value={password} secureTextEntry onChangeText={setPassword} />
 
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>

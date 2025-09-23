@@ -1,23 +1,22 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { Provider, useDispatch } from 'react-redux';
+import { store } from './app/store';
+import AppNavigation from './navigation/AppNavigation';
+import { loadUser } from './features/auth/authSlice';
+import { useEffect } from 'react';
+import { View } from 'react-native';
 
-import LoginScreen from './screens/LoginScreen';
-import RegisterScreen from './screens/RegisterScreen';
-import HomeScreen from './screens/HomeScreen';
-import CameraScreen from './screens/CameraScreen';
-
-const Stack = createStackNavigator();
+function Root() {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(loadUser());
+  }, []);
+  return <AppNavigation />;
+}
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Camera" component={CameraScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <Root />
+    </Provider>
   );
 }

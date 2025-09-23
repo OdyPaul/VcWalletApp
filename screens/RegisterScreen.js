@@ -1,27 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import axios from 'axios';
-import { API_URL } from '../config';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { register, reset } from '../features/auth/authSlice';
 
 export default function RegisterScreen({ navigation }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleRegister = async () => {
-    try {
-      const res = await axios.post(`${API_URL}/api/users`, {
-        name,
-        email,
-        password,
-      });
+  const dispatch = useDispatch();
+  const { user, isError, isSuccess, message } = useSelector(state => state.auth);
 
-      Alert.alert('Registration Success', 'You can now log in');
-      navigation.navigate('Login');
-    } catch (error) {
-      Alert.alert('Error', error.response?.data?.message || 'Registration failed');
+  useEffect(() => {
+    if (isError) {
+      Alert.alert('Error', message);
+      dispatch(reset());
     }
+
+    if (isSuccess || user) {
+      Alert.alert('Success', 'Registration successful!');
+      dispatch(reset());
+      navigation.replace('MainTabs'); // Automatically navigate after registration
+    }
+  }, [isError, isSuccess, user, message]);
+
+  const handleRegister = () => {
+    dispatch(register({ name, email, password }));
   };
 
   return (

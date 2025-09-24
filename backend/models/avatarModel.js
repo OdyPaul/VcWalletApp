@@ -1,10 +1,11 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const photoSchema = mongoose.Schema(
+const avatarSchema = mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User', // optional if you want to link photo to user
+      ref: 'User',
+      required: true,
     },
     filename: {
       type: String,
@@ -19,9 +20,7 @@ const photoSchema = mongoose.Schema(
       required: true,
     },
   },
-  {
-    timestamps: true,
-  }
-)
+  { timestamps: true }
+);
 
-module.exports = mongoose.model('Photo', photoSchema)
+module.exports = mongoose.model('Avatar', avatarSchema);

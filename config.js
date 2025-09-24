@@ -1,1 +1,2 @@
-export const API_URL = "https://9f361f859d43.ngrok-free.app";
+// config.js
+export const API_URL = "https://capstone-backend-s80k.onrender.com";

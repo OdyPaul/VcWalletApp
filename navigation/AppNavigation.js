@@ -8,16 +8,16 @@ import { useSelector, useDispatch } from 'react-redux';
 import { loadUser } from '../features/auth/authSlice';
 
 // Screens
-import LoginScreen from '../screens/LoginScreen';
-import RegisterScreen from '../screens/RegisterScreen';
-import WelcomeScreen from '../screens/WelcomeScreen';
-import HomeScreen from '../screens/HomeScreen';
-import CredentialsScreen from '../screens/CredentialsScreen';
-import HistoryScreen from '../screens/HistoryScreen';
-import SettingsScreen from '../screens/SettingsScreen';
+import LoginScreen from '../screens/auth/LoginScreen';
+import RegisterScreen from '../screens//auth/RegisterScreen';
+import WelcomeScreen from '../screens/auth/WelcomeScreen';
+import HomeScreen from '../screens/main/HomeScreen';
+import CredentialsScreen from '../screens/main/CredentialsScreen';
+import HistoryScreen from '../screens/main/HistoryScreen';
+import SettingsScreen from '../screens/main/SettingsScreen';
 import CameraScreen from '../screens/CameraScreen';
-import PersonalInfoScreen from '../screens/PersonalInfoScreen';
-
+import PersonalInfoScreen from '../screens/settings/PersonalInfoScreen';
+import AvatarCameraScreen from '../screens/camera/AvatarCamerScreen';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -68,6 +68,7 @@ export default function AppNavigation() {
             {/* App flow */}
             <Stack.Screen name="MainTabs" component={MainTabs} />
             <Stack.Screen name="Camera" component={CameraScreen} />
+            <Stack.Screen name="AvatarCamera" component={AvatarCameraScreen} options={{ headerShown: false }} />
             <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} />
           </>
         ) : (

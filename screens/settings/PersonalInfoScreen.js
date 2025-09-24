@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useIsFocused } from '@react-navigation/native';
-import ProfilePhotoModal from '../components/modals/ProfilePhotoModal';
-import { API_URL } from '../config';
+import ProfilePhotoModal from '../../components/modals/ProfilePhotoModal';
+import { API_URL } from '../../config';
 import axios from 'axios';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -14,7 +14,7 @@ export default function PersonalInfoScreen({ navigation }) {
 
   const user = useSelector(state => state.auth.user); // get user from Redux
   const token = user?.token;
-
+  
   // Redirect if no token
   useEffect(() => {
     if (!token) {

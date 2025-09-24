@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { register, reset } from '../features/auth/authSlice';
+import { register, reset } from '../../features/auth/authSlice';
 
 export default function RegisterScreen({ navigation }) {
   const [name, setName] = useState('');

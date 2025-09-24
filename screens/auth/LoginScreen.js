@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { login, reset } from '../features/auth/authSlice';
+import { login, reset } from '../../features/auth/authSlice';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');

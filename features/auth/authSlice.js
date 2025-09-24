@@ -3,10 +3,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import authService from './authService';
 
 // Load user from AsyncStorage on app start
+// authSlice.js
 export const loadUser = createAsyncThunk('auth/loadUser', async () => {
-  const user = await AsyncStorage.getItem('user');
-  return user ? JSON.parse(user) : null;
+  return await authService.getUser();
 });
+
 
 // Initial state
 const initialState = {

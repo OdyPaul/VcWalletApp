@@ -1,3 +1,4 @@
+// authService.js
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_URL } from '../../config';
@@ -22,4 +23,9 @@ const logout = async () => {
   await AsyncStorage.removeItem('user');
 };
 
-export default { register, login, logout };
+const getUser = async () => {
+  const user = await AsyncStorage.getItem('user');
+  return user ? JSON.parse(user) : null;
+};
+
+export default { register, login, logout, getUser };

@@ -1,5 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { useSelector } from 'react-redux';
+import { light, dark } from '../../theme/color';
 
 const transactions = [
   { id: '1', title: 'Diploma Request', status: 'Issued', date: '2025-09-20' },
@@ -8,13 +10,17 @@ const transactions = [
 ];
 
 export default function HistoryScreen() {
+  const darkMode = useSelector(state => state.settings.darkMode);
+  const colors = darkMode ? dark : light;
+
   const renderItem = ({ item }) => (
-    <View style={styles.item}>
+    <View style={[styles.item, { borderBottomColor: colors.border }]}>
       <View style={{ flex: 1 }}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.date}>{item.date}</Text>
+        <Text style={[styles.title, { color: colors.text }]}>{item.title}</Text>
+        <Text style={[styles.date, { color: colors.sub }]}>{item.date}</Text>
       </View>
-      <View style={[styles.badge, 
+      <View style={[
+        styles.badge, 
         item.status === 'Issued' && { backgroundColor: '#28a745' },
         item.status === 'Pending' && { backgroundColor: '#ffc107' },
         item.status === 'Paid' && { backgroundColor: '#007bff' }
@@ -25,8 +31,8 @@ export default function HistoryScreen() {
   );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Transaction History</Text>
+    <View style={[styles.container, { backgroundColor: colors.bg }]}>
+      <Text style={[styles.header, { color: colors.text }]}>Transaction History</Text>
       <FlatList 
         data={transactions} 
         keyExtractor={(item) => item.id}
@@ -38,11 +44,11 @@ export default function HistoryScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 16 },
+  container: { flex: 1, padding: 16 },
   header: { fontSize: 22, fontWeight: 'bold', marginBottom: 16 },
-  item: { flexDirection: 'row', alignItems: 'center', padding: 12, borderBottomWidth: 1, borderBottomColor: '#ddd' },
+  item: { flexDirection: 'row', alignItems: 'center', padding: 12, borderBottomWidth: 1 },
   title: { fontSize: 16, fontWeight: '500' },
-  date: { fontSize: 12, color: '#777' },
+  date: { fontSize: 12 },
   badge: { paddingVertical: 4, paddingHorizontal: 10, borderRadius: 12 },
   badgeText: { color: '#fff', fontWeight: 'bold' }
 });

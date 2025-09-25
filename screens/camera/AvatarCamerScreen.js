@@ -61,25 +61,24 @@ const takePhoto = async () => {
 };
 
   // ✅ Confirm and upload avatar
-  const confirmAvatar = async () => {
-    if (!photoUri) return;
+ const confirmAvatar = async () => {
+  if (!photoUri) return;
 
-    const formData = new FormData();
-    formData.append("photo", {
-      uri: photoUri,
-      type: "image/jpeg",
-      name: "avatar.jpg",
-    });
-
-    try {
-      await dispatch(uploadAvatar(formData)).unwrap();
-      Alert.alert("Success", "Avatar updated!");
-      navigation.goBack();
-    } catch (err) {
-      console.error("Upload error:", err);
-      Alert.alert("Error", err.message || "Failed to upload avatar");
-    }
+  const uploadAsset = {
+    uri: photoUri,
+    fileName: "avatar.jpg",
+    type: "image/jpeg",
   };
+
+  try {
+    await dispatch(uploadAvatar(uploadAsset)).unwrap();
+    Alert.alert("✅ Success", "Avatar updated!");
+    navigation.goBack();
+  } catch (err) {
+    console.error("Upload error:", err);
+    Alert.alert("Error", err.message || "Failed to upload avatar");
+  }
+};
 
   return (
     <View style={styles.container}>

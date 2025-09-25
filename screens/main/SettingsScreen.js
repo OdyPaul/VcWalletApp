@@ -18,6 +18,7 @@ import * as ImagePicker from 'expo-image-picker';
 import ProfilePhotoModal from '../../components/modals/ProfilePhotoModal';
 import { toggleDarkMode } from '../../features/settings/settingsSlice';
 import { logout } from '../../features/auth/authSlice';
+import { useNavigation } from "@react-navigation/native";
 import {
   getAvatar,
   uploadAvatar,
@@ -30,7 +31,6 @@ export default function SettingsScreen({ navigation }) {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const avatarState = useSelector((state) => state.avatar);
-
   const [modalVisible, setModalVisible] = useState(false);
   const [faceIDEnabled, setFaceIDEnabled] = useState(true);
   const darkMode = useSelector(state => state.settings.darkMode);
@@ -165,10 +165,15 @@ const colors = darkMode ? dark : light;
       <View style={[styles.section, { backgroundColor: colors.card }]}>
         <Text style={[styles.sectionTitle, { color: colors.sub }]}>Account details</Text>
 
-        <TouchableOpacity style={[styles.option, { borderBottomColor: colors.border }]}>
-          <Ionicons name="person-outline" size={20} color={colors.text} />
-          <Text style={[styles.optionText, { color: colors.text }]}>Personal Info</Text>
-        </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.option, { borderBottomColor: colors.border }]} 
+            // onPress={() => navigation.navigate("ConnectToMetamask")}
+          >
+            <Ionicons name="person-outline" size={20} color={colors.text} />
+            <Text style={[styles.optionText, { color: colors.text }]}>
+              Connect to Metamask
+            </Text>
+          </TouchableOpacity>
 
         <TouchableOpacity style={[styles.option, { borderBottomColor: colors.border }]}>
           <Ionicons name="trophy-outline" size={20} color={colors.text} />

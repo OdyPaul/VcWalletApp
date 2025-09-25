@@ -17,7 +17,12 @@ import HistoryScreen from '../screens/main/HistoryScreen';
 import SettingsScreen from '../screens/main/SettingsScreen';
 import CameraScreen from '../screens/CameraScreen';
 import PersonalInfoScreen from '../screens/settings/PersonalInfoScreen';
+import ConnectToMetamaskScreen from '../screens/settings/ConnectToMetamaskScreen';
 import AvatarCameraScreen from '../screens/camera/AvatarCamerScreen';
+import VCFormScreen from '../screens/vc/VCFormScreen';
+import FaceCaptureScreen from '../screens/camera/FaceCaptureScreen';
+import ValidIDCaptureScreen from '../screens/camera/ValidIDCaptureScreen';
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -64,12 +69,18 @@ export default function AppNavigation() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {user ? (
-          <>
+        <>
             {/* App flow */}
             <Stack.Screen name="MainTabs" component={MainTabs} />
             <Stack.Screen name="Camera" component={CameraScreen} />
             <Stack.Screen name="AvatarCamera" component={AvatarCameraScreen} options={{ headerShown: false }} />
             <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} />
+            {/* <Stack.Screen name="ConnectToMetamask" component={ConnectToMetamaskScreen} options={{ title: "Connect to Metamask" }}/> */}
+
+            {/* VC Request Flow */}
+            <Stack.Screen name="VCForm" component={VCFormScreen} options={{ title: "New VC Request" }} />
+            <Stack.Screen name="FaceCapture" component={FaceCaptureScreen} options={{ title: "Capture Face" }} />
+            <Stack.Screen name="ValidIDCapture" component={ValidIDCaptureScreen} options={{ title: "Capture Valid ID" }} />
           </>
         ) : (
           <>

@@ -4,7 +4,7 @@ import AppNavigation from './navigation/AppNavigation';
 import { loadUser } from './features/auth/authSlice';
 import { useEffect } from 'react';
 import { View } from 'react-native';
-
+import 'react-native-url-polyfill/auto';
 function Root() {
   const dispatch = useDispatch();
   useEffect(() => {

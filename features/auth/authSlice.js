@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import authService from './authService';
-
+import { getAvatar } from "../photo/avatarSlice"; // ✅ import
 // Load user from AsyncStorage on app start
 // authSlice.js
 export const loadUser = createAsyncThunk('auth/loadUser', async () => {
@@ -99,7 +99,17 @@ export const authSlice = createSlice({
         state.user = null;
       });
   },
+
+
 });
 
 export const { reset } = authSlice.actions;
 export default authSlice.reducer;
+
+export const authExtraActions = (dispatch) => {
+  return {
+    onLoginSuccess: (user) => {
+      dispatch(getAvatar()); // fetch avatar right after login
+    },
+  };
+};

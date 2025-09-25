@@ -3,13 +3,15 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import avatarService from './avatarService';
 
 const initialState = {
-  avatar: null,       // backend avatar object or local
-  previewUri: null,   // local preview while uploading
+  avatar: null,       // Avatar object from backend
+  previewUri: null,   // Local preview during upload
   isError: false,
   isSuccess: false,
   isLoading: false,
   message: '',
 };
+
+// ---------------- Thunks ---------------- //
 
 // Upload or replace avatar
 export const uploadAvatar = createAsyncThunk(
@@ -18,21 +20,26 @@ export const uploadAvatar = createAsyncThunk(
     try {
       return await avatarService.uploadAvatar(photoData);
     } catch (error) {
-      const message = error.response?.data?.message || error.message || error.toString();
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        error.toString();
       return thunkAPI.rejectWithValue(message);
     }
   }
 );
 
-// Fetch avatar (tries local first, then backend)
+// Fetch current user's avatar
 export const getAvatar = createAsyncThunk(
   'avatar/get',
   async (_, thunkAPI) => {
     try {
-      const avatar = await avatarService.getAvatar();
-      return avatar;
+      return await avatarService.getAvatar();
     } catch (error) {
-      const message = error.response?.data?.message || error.message || error.toString();
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        error.toString();
       return thunkAPI.rejectWithValue(message);
     }
   }
@@ -45,11 +52,16 @@ export const deleteAvatar = createAsyncThunk(
     try {
       return await avatarService.deleteAvatar(id);
     } catch (error) {
-      const message = error.response?.data?.message || error.message || error.toString();
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        error.toString();
       return thunkAPI.rejectWithValue(message);
     }
   }
 );
+
+// ---------------- Slice ---------------- //
 
 const avatarSlice = createSlice({
   name: 'avatar',
@@ -65,24 +77,32 @@ const avatarSlice = createSlice({
     setPreview: (state, action) => {
       state.previewUri = action.payload;
     },
+    clearAvatar: (state) => {
+      state.avatar = null;
+      state.previewUri = null;
+    },
   },
   extraReducers: (builder) => {
     builder
-      // Upload
+      // Upload avatar
       .addCase(uploadAvatar.pending, (state, action) => {
         state.isLoading = true;
 
-        // auto-set preview from FormData
+        // auto-set preview from FormData (React Native style)
         if (action.meta.arg?._parts) {
-          const uriPart = action.meta.arg._parts.find(p => p[0] === 'photo');
-          if (uriPart?.[1]?.uri) state.previewUri = uriPart[1].uri;
+          const uriPart = action.meta.arg._parts.find(
+            (p) => p[0] === 'photo'
+          );
+          if (uriPart?.[1]?.uri) {
+            state.previewUri = uriPart[1].uri;
+          }
         }
       })
       .addCase(uploadAvatar.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
         state.avatar = action.payload;
-        // previewUri remains for immediate UI
+        state.previewUri = null;
       })
       .addCase(uploadAvatar.rejected, (state, action) => {
         state.isLoading = false;
@@ -90,7 +110,7 @@ const avatarSlice = createSlice({
         state.message = action.payload;
       })
 
-      // Fetch
+      // Get avatar
       .addCase(getAvatar.pending, (state) => {
         state.isLoading = true;
       })
@@ -105,7 +125,7 @@ const avatarSlice = createSlice({
         state.message = action.payload;
       })
 
-      // Delete
+      // Delete avatar
       .addCase(deleteAvatar.fulfilled, (state) => {
         state.avatar = null;
         state.previewUri = null;
@@ -113,5 +133,7 @@ const avatarSlice = createSlice({
   },
 });
 
-export const { reset, setPreview } = avatarSlice.actions;
+// ---------------- Exports ---------------- //
+
+export const { reset, setPreview, clearAvatar } = avatarSlice.actions;
 export default avatarSlice.reducer;

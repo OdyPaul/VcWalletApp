@@ -19,6 +19,7 @@ import { light, dark } from '../../theme/color';
 import ProfilePhotoModal from '../../components/modals/ProfilePhotoModal';
 import { toggleDarkMode } from '../../features/settings/settingsSlice';
 import { logout } from '../../features/auth/authSlice';
+import { clearAvatar } from "../../features/photo/avatarSlice";
 import {
   getAvatar,
   uploadAvatar,
@@ -51,8 +52,7 @@ export default function SettingsScreen({ navigation }) {
     navigation.navigate('AvatarCamera');
   };
 
-  // 🖼️ Pick from gallery and upload
-  // 🖼️ Pick from gallery and upload
+
 const pickFromGallery = async () => {
   try {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -66,17 +66,15 @@ const pickFromGallery = async () => {
 
     const asset = result.assets[0];
 
-    // Prepare normalized object for uploadAvatar
     const uploadAsset = {
       uri: asset.uri,
       fileName: asset.fileName || 'avatar.jpg',
-      type: asset.type ? `image/${asset.type}` : 'image/jpeg',
+      type: asset.mimeType ?? 'image/jpeg', // ✅ safer than asset.type
     };
 
-    // ✅ Immediately show the preview
     dispatch(setPreview(uploadAsset.uri));
-
     await dispatch(uploadAvatar(uploadAsset)).unwrap();
+
     Alert.alert("✅ Success", "Avatar uploaded");
     setModalVisible(false);
   } catch (err) {
@@ -84,6 +82,7 @@ const pickFromGallery = async () => {
     Alert.alert("Upload failed", err.message || "Unknown error");
   }
 };
+
 
 
 
@@ -104,17 +103,18 @@ const pickFromGallery = async () => {
   };
 
   // 🚪 Logout
-  const handleLogout = async () => {
-    try {
-      await authService.logout(); // clears AsyncStorage
-      dispatch(logout());         // clears Redux auth slice
-      Alert.alert('Logout', 'You have been logged out.');
-      // Navigation auto-handled in AppNavigation when user = null
-    } catch (err) {
-      console.error('Logout failed', err);
-      Alert.alert('Error', 'Failed to logout.');
-    }
-  };
+const handleLogout = async () => {
+  try {
+    await authService.logout(); // clears AsyncStorage
+    dispatch(logout());         // clears Redux auth slice
+    dispatch(clearAvatar());    // ✅ clears Redux avatar slice
+    Alert.alert("Logout", "You have been logged out.");
+    // Navigation auto-handled in AppNavigation when user = null
+  } catch (err) {
+    console.error("Logout failed", err);
+    Alert.alert("Error", "Failed to logout.");
+  }
+};
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.bg }]}>
@@ -122,11 +122,16 @@ const pickFromGallery = async () => {
       <View style={[styles.headerCard, { backgroundColor: colors.card }]}>
         <TouchableOpacity onPress={() => setModalVisible(true)}>
           {displayUri ? (
-            <Image
-              source={{ uri: displayUri }}
-              style={styles.avatar}
-              onError={() => console.log('Failed to load avatar')}
-            />
+          <Image
+            source={{ uri: displayUri }}
+            style={styles.avatar}
+            onError={() => {
+              console.warn("❌ Failed to load avatar, clearing local state");
+              dispatch({ type: "avatar/clearAvatar" }); // simple action to reset state
+            }}
+          />
+
+
           ) : (
             <View style={[styles.avatar, styles.placeholder]}>
               <Ionicons name="person-outline" size={40} color={colors.sub} />

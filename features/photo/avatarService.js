@@ -68,7 +68,7 @@ const getAvatar = async () => {
       _id: avatar._id,
       filename: avatar.filename,
       contentType: avatar.contentType,
-      uri: `${API_URL}/api/avatar/${avatar._id}`,
+      uri: avatar.uri,
     };
 
     await saveAvatarLocally(avatarData);
@@ -129,7 +129,7 @@ const uploadAvatar = async (asset) => {
       _id: avatar._id,
       filename: avatar.filename,
       contentType: avatar.contentType,
-      uri: `${API_URL}/api/avatar/${avatar._id}`,
+      uri: `${API_URL}/api/avatar/${avatar._id}`, // always absolute URL
     };
 
     await saveAvatarLocally(avatarData);

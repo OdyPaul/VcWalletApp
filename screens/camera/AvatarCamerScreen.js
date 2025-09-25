@@ -48,37 +48,44 @@ export default function AvatarCameraScreen({ navigation }) {
  
 const takePhoto = async () => {
   if (!cameraRef.current) return;
-  const photo = await cameraRef.current.takePictureAsync();
-
-  const resized = await ImageManipulator.manipulateAsync(
-    photo.uri,
-    [{ resize: { width: 800 } }], // resize to width 800px
-    { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
-  );
-
-  setPhotoUri(resized.uri);
-  dispatch(setPreview(resized.uri));
-};
-
-  // ✅ Confirm and upload avatar
- const confirmAvatar = async () => {
-  if (!photoUri) return;
-
-  const uploadAsset = {
-    uri: photoUri,
-    fileName: "avatar.jpg",
-    type: "image/jpeg",
-  };
 
   try {
-    await dispatch(uploadAvatar(uploadAsset)).unwrap();
-    Alert.alert("✅ Success", "Avatar updated!");
+    const photo = await cameraRef.current.takePictureAsync({ quality: 0.7 });
+
+    if (!photo?.uri) {
+      Alert.alert("Error", "No photo URI captured");
+      return;
+    }
+
+    const resized = await ImageManipulator.manipulateAsync(
+      photo.uri,
+      [{ resize: { width: 800 } }],
+      { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+    );
+
+    setPhotoUri(resized.uri);
+    dispatch(setPreview(resized.uri));
+  } catch (err) {
+    console.error("Camera error:", err);
+    Alert.alert("Camera error", err.message || "Failed to capture photo");
+  }
+};
+
+
+  // ✅ Confirm and upload avatar
+  const confirmAvatar = async () => {
+  if (!photoUri) return;
+
+  try {
+    await dispatch(uploadAvatar({ uri: photoUri, type: "image/jpeg", name: "avatar.jpg" })).unwrap();
+    Alert.alert("Success", "Avatar updated!");
     navigation.goBack();
   } catch (err) {
     console.error("Upload error:", err);
     Alert.alert("Error", err.message || "Failed to upload avatar");
   }
 };
+
 
   return (
     <View style={styles.container}>

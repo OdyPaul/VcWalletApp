@@ -53,7 +53,7 @@ export default function ValidIDCaptureScreen({ navigation, route }) {
 const submitVCRequest = async () => {
     try {
     // 🔎 Check if the user already has a pending request for this type
-    const checkRes = await fetch(`${API_URL}/api/vc-requests/mine`, {
+    const checkRes = await fetch(`${API_URL}/api/mobile/vc-request/mine`, {
       headers: {
         Authorization: `Bearer ${user?.token}`,
       },
@@ -97,7 +97,7 @@ const submitVCRequest = async () => {
       });
     }
 
-    const res = await fetch(`${API_URL}/api/vc-requests`, {
+    const res = await fetch(`${API_URL}/api/mobile/vc-requests`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${user?.token}`,

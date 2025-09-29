@@ -1,10 +1,12 @@
 // authService.js
+
+
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_URL } from '../../config';
 
 const register = async (userData) => {
-  const response = await axios.post(`${API_URL}/api/users`, userData);
+  const response = await axios.post(`${API_URL}/api/mobile/users`, userData);
   if (response.data) {
     await AsyncStorage.setItem('user', JSON.stringify(response.data));
   }
@@ -12,7 +14,7 @@ const register = async (userData) => {
 };
 
 const login = async (userData) => {
-  const response = await axios.post(`${API_URL}/api/users/login`, userData);
+  const response = await axios.post(`${API_URL}/api/mobile/users/login`, userData);
   if (response.data) {
     await AsyncStorage.setItem('user', JSON.stringify(response.data));
   }

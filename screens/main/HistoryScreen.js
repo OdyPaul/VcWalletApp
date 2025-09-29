@@ -30,7 +30,7 @@ export default function HistoryScreen() {
   const fetchTransactions = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API_URL}/api/vc-requests/mine`, {
+      const res = await fetch(`${API_URL}/api/mobile/vc-request/mine`, {
         headers: { Authorization: `Bearer ${user?.token}` },
       });
 

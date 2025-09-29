@@ -20,6 +20,9 @@ import ProfilePhotoModal from '../../components/modals/ProfilePhotoModal';
 import { toggleDarkMode } from '../../features/settings/settingsSlice';
 import { logout } from '../../features/auth/authSlice';
 import { clearAvatar } from "../../features/photo/avatarSlice";
+import ConfirmVerifyModal from "../../components/modals/VerifyProfileModal";
+import VerifyFirstModal from "../../components/modals/VerifyFirstModal";
+
 import {
   getAvatar,
   uploadAvatar,
@@ -31,6 +34,7 @@ import authService from '../../features/auth/authService';
 export default function SettingsScreen({ navigation }) {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
+  console.log(user.verified)
   const { avatar, previewUri } = useSelector((state) => state.avatar);
   const darkMode = useSelector((state) => state.settings.darkMode);
   const isFocused = useIsFocused();
@@ -40,7 +44,8 @@ export default function SettingsScreen({ navigation }) {
 
   const colors = darkMode ? dark : light;
   const displayUri = previewUri || avatar?.uri;
-
+  const [confirmVisible, setConfirmVisible] = useState(false);
+  const [verifyFirstVisible, setVerifyFirstVisible] = useState(false);
   // 🔄 Fetch avatar when screen is focused
   useEffect(() => {
     if (isFocused) dispatch(getAvatar());
@@ -102,6 +107,15 @@ const pickFromGallery = async () => {
     }
   };
 
+const handleVerifyAccount = () => {
+  setConfirmVisible(true);
+};
+
+const confirmVerification = () => {
+  setConfirmVisible(false);
+  navigation.navigate("VerifyAccount");
+};
+
   // 🚪 Logout
 const handleLogout = async () => {
   try {
@@ -139,19 +153,34 @@ const handleLogout = async () => {
           )}
         </TouchableOpacity>
 
-        <View style={{ marginLeft: 12 }}>
-          <Text style={[styles.name, { color: colors.text }]}>
-            {user?.name || 'John Doe'}
-          </Text>
-          <Text style={[styles.username, { color: colors.sub }]}>
-            @{user?.username || 'johndoe'}
-          </Text>
-          <View style={styles.verifiedBadge}>
-            <Ionicons name="checkmark-circle" size={14} color="#fff" />
-            <Text style={styles.verifiedText}>Verified</Text>
+          <View style={{ marginLeft: 12 }}>
+            <Text style={[styles.name, { color: colors.text }]}>
+              {user?.name || 'John Doe'}
+            </Text>
+            <Text style={[styles.username, { color: colors.sub }]}>
+              @{user?.username || 'johndoe'}
+            </Text>
+
+            {user?.verified === "verified" ? (
+              <View style={[styles.verifiedBadge, { backgroundColor: "green" }]}>
+                <Ionicons name="checkmark-circle" size={14} color="#fff" />
+                <Text style={styles.verifiedText}>Verified</Text>
+              </View>
+            ) : (
+              <TouchableOpacity 
+                style={[styles.verifiedBadge, { backgroundColor: "red" }]}
+                onPress={handleVerifyAccount}
+              >
+                <Ionicons name="close-circle" size={14} color="#fff" />
+                <Text style={styles.verifiedText}>Unverified</Text>
+              </TouchableOpacity>
+            )}
+
+
           </View>
-        </View>
-      </View>
+          </View>
+
+
 
       {/* ⚙️ Account details */}
       <View style={[styles.section, { backgroundColor: colors.card }]}>
@@ -159,12 +188,31 @@ const handleLogout = async () => {
           Account details
         </Text>
 
-        <TouchableOpacity style={[styles.option, { borderBottomColor: colors.border }]}>
-          <Ionicons name="person-outline" size={20} color={colors.text} />
-          <Text style={[styles.optionText, { color: colors.text }]}>
-            Connect to Metamask
-          </Text>
-        </TouchableOpacity>
+          {user?.verified === "verified" ? (
+            // ✅ Verified → go to profile info
+            <TouchableOpacity
+              style={[styles.option, { borderBottomColor: colors.border }]}
+              onPress={() => navigation.navigate("PersonalInfo")}
+            >
+              <Ionicons name="person-outline" size={20} color={colors.text} />
+              <Text style={[styles.optionText, { color: colors.text }]}>
+                Profile
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            // ❌ Unverified → trigger verify flow
+              <TouchableOpacity
+                style={[styles.option, { borderBottomColor: colors.border }]}
+                onPress={() => setVerifyFirstVisible(true)} // 👈 open new modal
+              >
+                <Ionicons name="person-outline" size={20} color={colors.text} />
+                <Text style={[styles.optionText, { color: colors.text }]}>
+                  Profile
+                </Text>
+              </TouchableOpacity>
+          )}
+
+
 
         <TouchableOpacity style={[styles.option, { borderBottomColor: colors.border }]}>
           <Ionicons name="trophy-outline" size={20} color={colors.text} />
@@ -227,6 +275,20 @@ const handleLogout = async () => {
         onPickGallery={pickFromGallery}
         onRemove={removePhoto}
       />
+
+        <ConfirmVerifyModal
+        visible={confirmVisible}
+        onCancel={() => setConfirmVisible(false)}
+        onConfirm={confirmVerification}
+      />
+
+  <VerifyFirstModal
+  visible={verifyFirstVisible}
+  onClose={() => setVerifyFirstVisible(false)}
+  onVerify={() => {
+    setVerifyFirstVisible(false);
+    navigation.navigate("VerifyAccount");
+  }}/>
     </ScrollView>
   );
 }

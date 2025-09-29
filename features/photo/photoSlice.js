@@ -2,57 +2,33 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import photoService from './photoService';
 
 const initialState = {
-  photos: [],
-  isError: false,
-  isSuccess: false,
+  selfie: null,
+  idCard: null,
   isLoading: false,
+  isError: false,
   message: '',
 };
 
-// Upload photo
-export const uploadPhoto = createAsyncThunk(
-  'photo/upload',
-  async (photoData, thunkAPI) => {
+// Upload selfie
+export const uploadSelfie = createAsyncThunk(
+  'photos/uploadSelfie',
+  async (file, thunkAPI) => {
     try {
-      return await photoService.uploadPhoto(photoData);
-    } catch (error) {
-      const message =
-        (error.response && error.response.data && error.response.data.message) ||
-        error.message ||
-        error.toString();
-      return thunkAPI.rejectWithValue(message);
+      return await photoService.uploadPhoto(file);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response?.data?.message || err.message);
     }
   }
 );
 
-// Fetch photos
-export const getPhotos = createAsyncThunk(
-  'photo/getAll',
-  async (_, thunkAPI) => {
+// Upload ID card
+export const uploadId = createAsyncThunk(
+  'photos/uploadId',
+  async (file, thunkAPI) => {
     try {
-      return await photoService.getPhotos();
-    } catch (error) {
-      const message =
-        (error.response && error.response.data && error.response.data.message) ||
-        error.message ||
-        error.toString();
-      return thunkAPI.rejectWithValue(message);
-    }
-  }
-);
-
-// Delete photo
-export const deletePhoto = createAsyncThunk(
-  'photo/delete',
-  async (id, thunkAPI) => {
-    try {
-      return await photoService.deletePhoto(id);
-    } catch (error) {
-      const message =
-        (error.response && error.response.data && error.response.data.message) ||
-        error.message ||
-        error.toString();
-      return thunkAPI.rejectWithValue(message);
+      return await photoService.uploadPhoto(file);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response?.data?.message || err.message);
     }
   }
 );
@@ -60,43 +36,31 @@ export const deletePhoto = createAsyncThunk(
 const photoSlice = createSlice({
   name: 'photo',
   initialState,
-  reducers: {
-    reset: (state) => {
-      state.isLoading = false;
-      state.isSuccess = false;
-      state.isError = false;
-      state.message = '';
-    },
-  },
+  reducers: { reset: (state) => Object.assign(state, initialState) },
   extraReducers: (builder) => {
     builder
-      // Upload
-      .addCase(uploadPhoto.pending, (state) => { state.isLoading = true; })
-      .addCase(uploadPhoto.fulfilled, (state, action) => {
+      // Selfie
+      .addCase(uploadSelfie.pending, (state) => { state.isLoading = true; })
+      .addCase(uploadSelfie.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isSuccess = true;
-        state.photos.push(action.payload);
+        state.selfie = action.payload; // holds { _id, url }
       })
-      .addCase(uploadPhoto.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
-      })
-      // Get Photos
-      .addCase(getPhotos.pending, (state) => { state.isLoading = true; })
-      .addCase(getPhotos.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.isSuccess = true;
-        state.photos = action.payload;
-      })
-      .addCase(getPhotos.rejected, (state, action) => {
+      .addCase(uploadSelfie.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
       })
-      // Delete Photo
-      .addCase(deletePhoto.fulfilled, (state, action) => {
-        state.photos = state.photos.filter((photo) => photo._id !== action.payload.id);
+
+      // ID card
+      .addCase(uploadId.pending, (state) => { state.isLoading = true; })
+      .addCase(uploadId.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.idCard = action.payload; // holds { _id, url }
+      })
+      .addCase(uploadId.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
       });
   },
 });

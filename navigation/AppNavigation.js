@@ -22,6 +22,7 @@ import AvatarCameraScreen from '../screens/camera/AvatarCamerScreen';
 import VCFormScreen from '../screens/vc/VCFormScreen';
 import FaceCaptureScreen from '../screens/camera/FaceCaptureScreen';
 import ValidIDCaptureScreen from '../screens/camera/ValidIDCaptureScreen';
+import VerifyAccount from '../screens/settings/VerifyAccount';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -74,6 +75,7 @@ export default function AppNavigation() {
             <Stack.Screen name="MainTabs" component={MainTabs} />
             <Stack.Screen name="Camera" component={CameraScreen} />
             <Stack.Screen name="AvatarCamera" component={AvatarCameraScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="VerifyAccount" component={VerifyAccount} options={{ title: "Verify Account" }} />
             <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} />
             {/* <Stack.Screen name="ConnectToMetamask" component={ConnectToMetamaskScreen} options={{ title: "Connect to Metamask" }}/> */}
 

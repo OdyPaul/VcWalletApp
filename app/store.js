@@ -4,6 +4,7 @@ import authReducer from '../features/auth/authSlice';
 import photoReducer from '../features/photo/photoSlice';
 import avatarReducer from '../features/photo/avatarSlice'
 import settingsReducer from '../features/settings/settingsSlice'
+import vcReducer from "../features/vcRequest/vcSlice";
 
 export const store = configureStore({
   reducer: {
@@ -11,5 +12,6 @@ export const store = configureStore({
     photo: photoReducer,
     avatar: avatarReducer,
     settings: settingsReducer,
+    vc: vcReducer,
   },
 });

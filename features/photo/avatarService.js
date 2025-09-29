@@ -59,7 +59,7 @@ const getAvatar = async () => {
 
   try {
     const config = { headers: { Authorization: `Bearer ${token}` } };
-    const res = await axios.get(`${API_URL}/api/avatar`, config);
+    const res = await axios.get(`${API_URL}/api/mobile/avatar`, config);
 
     const avatar = res.data;
     if (!avatar?._id) return null;
@@ -87,7 +87,7 @@ const deleteAvatar = async (id) => {
 
   try {
     const config = { headers: { Authorization: `Bearer ${token}` } };
-    const res = await axios.delete(`${API_URL}/api/avatar/${id}`, config);
+    const res = await axios.delete(`${API_URL}/api/mobile/avatar/${id}`, config);
 
     await AsyncStorage.removeItem(key);
     return res.data;
@@ -116,7 +116,7 @@ const uploadAvatar = async (asset) => {
   });
 
   try {
-    const response = await fetch(`${API_URL}/api/avatar`, {
+    const response = await fetch(`${API_URL}/api/mobile/avatar`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
       body: formData,
@@ -129,7 +129,7 @@ const uploadAvatar = async (asset) => {
       _id: avatar._id,
       filename: avatar.filename,
       contentType: avatar.contentType,
-      uri: `${API_URL}/api/avatar/${avatar._id}`, // always absolute URL
+      uri: `${API_URL}/api/mobile/avatar/${avatar._id}`, // always absolute URL
     };
 
     await saveAvatarLocally(avatarData);

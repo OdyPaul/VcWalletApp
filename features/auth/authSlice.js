@@ -78,12 +78,13 @@ export const logout = createAsyncThunk("auth/logout", async () => {
 // -----------------------------------------------------------------------------
 // ✅ Update DID (wallet address)
 // -----------------------------------------------------------------------------
+// ✅ Update DID (wallet address)
 export const updateUserDID = createAsyncThunk(
   "auth/updateUserDID",
-  async ({ userId, walletAddress, token }, thunkAPI) => {
+  async ({ userId, did, token }, thunkAPI) => {
     try {
-      const updated = await authService.updateUserDID(userId, walletAddress, token);
-      return updated.user; // backend returns { message, user }
+      const updatedUser = await authService.updateUserDID(userId, did, token);
+      return updatedUser;
     } catch (error) {
       const message =
         error.response?.data?.message || error.message || error.toString();
@@ -91,6 +92,7 @@ export const updateUserDID = createAsyncThunk(
     }
   }
 );
+
 
 // -----------------------------------------------------------------------------
 // Initial state
@@ -178,6 +180,7 @@ export const authSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
+        
       });
   },
 });

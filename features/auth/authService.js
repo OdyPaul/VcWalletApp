@@ -20,21 +20,26 @@ const login = async (userData) => {
   try {
     const response = await axios.post(`${API_URL}/api/mobile/users/login`, userData);
 
-    if (response.data) {
-      const user = response.data;
+    if (!response.data) return null;
 
-      // ✅ Save token separately (if exists)
-      if (user?.token) {
-        await AsyncStorage.setItem("token", user.token);
-      }
+    const user = response.data;
 
-      // ✅ Always store the full user object
-      await AsyncStorage.setItem("user", JSON.stringify(user));
-
-      return user;
+    // ✅ Save token
+    if (user?.token) {
+      await AsyncStorage.setItem("token", user.token);
     }
 
-    return null;
+    // ✅ Fetch the full user profile (includes DID)
+    const profileRes = await axios.get(`${API_URL}/api/mobile/users/me`, {
+      headers: { Authorization: `Bearer ${user.token}` },
+    });
+
+    // Merge both (token + full user info)
+    const fullUser = { ...profileRes.data, token: user.token };
+
+    await AsyncStorage.setItem("user", JSON.stringify(fullUser));
+
+    return fullUser;
   } catch (error) {
     const message =
       error.response?.data?.message ||
@@ -56,35 +61,26 @@ const logout = async () => {
     console.error("Error clearing storage on logout:", error);
   }
 };
+
 // -----------------------------------------------------------------------------
 // Get user from AsyncStorage
 // -----------------------------------------------------------------------------
 const getUser = async (token) => {
   try {
-    // 1️⃣ Try local user first
     const localUser = await AsyncStorage.getItem("user");
-    if (localUser) {
-      return JSON.parse(localUser);
-    }
+    if (localUser) return JSON.parse(localUser);
 
-    // 2️⃣ If no local user, fetch from backend
     if (token) {
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      const { data } = await axios.get(`${API_URL}/api/mobile/me`, config);
+      const { data } = await axios.get(`${API_URL}/api/mobile/users/me`, config);
 
-      if (data?.user) {
-        await AsyncStorage.setItem("user", JSON.stringify(data.user));
-        return data.user;
-      }
-
-      // if backend returns user directly, not wrapped
-      if (data) {
-        await AsyncStorage.setItem("user", JSON.stringify(data));
-        return data;
+      const user = data?.user || data;
+      if (user) {
+        await AsyncStorage.setItem("user", JSON.stringify(user));
+        return user;
       }
     }
 
-    // 3️⃣ Fallback
     return null;
   } catch (error) {
     console.error("❌ getUser error:", error);
@@ -92,10 +88,8 @@ const getUser = async (token) => {
   }
 };
 
-
-
 // -----------------------------------------------------------------------------
-// 🪪 Update user DID (wallet address)
+// 🪪 Update user DID
 // -----------------------------------------------------------------------------
 const updateUserDID = async (userId, walletAddress, token) => {
   if (!token) throw new Error("Missing auth token");
@@ -109,16 +103,16 @@ const updateUserDID = async (userId, walletAddress, token) => {
 
   const { data } = await axios.put(
     `${API_URL}/api/mobile/${userId}/did`,
-    { walletAddress },
+    { walletAddress }, // 👈 backend expects this
     config
   );
 
-  // ✅ Persist updated user
   if (data?.user) {
     await AsyncStorage.setItem("user", JSON.stringify(data.user));
+    return data.user;
   }
 
-  return data; // { message, user }
+  return null;
 };
 
 export default { register, login, logout, getUser, updateUserDID };

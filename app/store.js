@@ -5,7 +5,7 @@ import photoReducer from '../features/photo/photoSlice';
 import avatarReducer from '../features/photo/avatarSlice'
 import settingsReducer from '../features/settings/settingsSlice'
 import verificationReducer from "../features/verification/verificationSlice";
-import walletDIDSliceReducer from "../features/verification/walletDIDSlice"
+
 
 
 export const store = configureStore({
@@ -15,6 +15,6 @@ export const store = configureStore({
     avatar: avatarReducer,
     settings: settingsReducer,
     verification: verificationReducer,
-    walletDID: walletDIDSliceReducer
+ 
   },
 });

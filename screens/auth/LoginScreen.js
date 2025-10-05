@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { login, reset } from '../../features/auth/authSlice';
-import { authExtraActions } from '../../features/auth/authSlice'; // 👈 import
+import { authExtraActions } from '../../features/auth/authSlice';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -18,27 +18,23 @@ export default function LoginScreen({ navigation }) {
     }
 
     if (isSuccess || user) {
-      Alert.alert('Login Success', `Welcome ${user.name}`);
+      Alert.alert('✅ Login Success', `Welcome ${user?.name || 'User'}`);
 
-      // ✅ load avatar immediately after login
+      // ✅ Automatically load avatar and any other extras
       authExtraActions(dispatch).onLoginSuccess(user);
 
       dispatch(reset());
-      navigation.replace('MainTabs'); 
+      navigation.replace('MainTabs');
     }
   }, [isError, isSuccess, user, message]);
 
   const handleLogin = () => {
-    // 👉 wait for login thunk to finish
     dispatch(login({ email, password }))
       .unwrap()
       .then((user) => {
-        // ✅ also safe to load avatar here
         authExtraActions(dispatch).onLoginSuccess(user);
       })
-      .catch(() => {
-        // error already handled by isError
-      });
+      .catch(() => {});
   };
 
   return (

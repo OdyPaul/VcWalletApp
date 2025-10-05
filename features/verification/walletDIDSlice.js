@@ -10,9 +10,7 @@ export const updateWalletDID = createAsyncThunk(
       return await walletDIDService.updateWalletDID(userId, walletAddress, token);
     } catch (error) {
       const message =
-        (error.response && error.response.data && error.response.data.message) ||
-        error.message ||
-        error.toString();
+        (error.response?.data?.message) || error.message || error.toString();
       return thunkAPI.rejectWithValue(message);
     }
   }

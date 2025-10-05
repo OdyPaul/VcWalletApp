@@ -1,4 +1,4 @@
-// src/features/verification/walletDID.service.js
+// src/features/verification/walletDIDService.js
 import axios from "axios";
 import { API_URL } from "../../config";
 
@@ -14,7 +14,7 @@ const updateWalletDID = async (userId, walletAddress, token) => {
   };
 
   const { data } = await axios.put(
-    `${API_URL}/mobile/${userId}/did`,
+    `${API_URL}/api/mobile/${userId}/did`,
     { walletAddress },
     config
   );
@@ -22,5 +22,7 @@ const updateWalletDID = async (userId, walletAddress, token) => {
   return data.user; // backend returns { message, user }
 };
 
-const walletDIDService = { updateWalletDID };
-export default walletDIDService;
+// ✅ Correct export — not nested, not default-wrapped incorrectly
+export default {
+  updateWalletDID,
+};

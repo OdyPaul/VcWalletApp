@@ -178,24 +178,28 @@ export default function VerifyAccount() {
             style={styles.input}
             placeholder="Full Name"
             value={personal.fullName}
+            placeholderTextColor="#000" 
             onChangeText={(t) => setPersonal({ ...personal, fullName: t })}
           />
           <TextInput
             style={styles.input}
             placeholder="Address"
             value={personal.address}
+            placeholderTextColor="#000" 
             onChangeText={(t) => setPersonal({ ...personal, address: t })}
           />
           <TextInput
             style={styles.input}
             placeholder="Place of Birth"
             value={personal.birthPlace}
+            placeholderTextColor="#000" 
             onChangeText={(t) => setPersonal({ ...personal, birthPlace: t })}
           />
           <TextInput
             style={styles.input}
             placeholder="Date of Birth (YYYY-MM-DD)"
             value={personal.birthDate}
+            placeholderTextColor="#000" 
             onChangeText={(t) => setPersonal({ ...personal, birthDate: t })}
           />
           <TouchableOpacity style={styles.button} onPress={() => setStep(2)}>
@@ -523,6 +527,7 @@ const styles = StyleSheet.create({
     padding: s(12),
     marginBottom: vs(12),
     backgroundColor: "#fafafa",
+    
   },
 
   // Buttons

@@ -108,7 +108,22 @@ const pickFromGallery = async () => {
   };
 
 const handleVerifyAccount = () => {
-  setConfirmVisible(true);
+  if (!user?.did) {
+    // 👇 redirect to wallet setup first
+    Alert.alert(
+      "DID Required",
+      "You need to connect your wallet before verifying your account.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Connect Wallet",
+          onPress: () => navigation.navigate("ConnectWallet"),
+        },
+      ]
+    );
+  } else {
+    setConfirmVisible(true);
+  }
 };
 
 const confirmVerification = () => {
@@ -218,6 +233,11 @@ const handleLogout = async () => {
           <Ionicons name="trophy-outline" size={20} color={colors.text} />
           <Text style={[styles.optionText, { color: colors.text }]}>Level Account</Text>
         </TouchableOpacity>
+        <View style={styles.infoRow}>
+
+      <Text style={styles.label}>Decentralized ID (DID)</Text>
+        <Text style={styles.value}>{user?.did || "Not linked"}</Text>
+      </View>
 
         <TouchableOpacity style={[styles.option, { borderBottomColor: colors.border }]}>
           <Ionicons name="people-outline" size={20} color={colors.text} />

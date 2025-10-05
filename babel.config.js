@@ -10,7 +10,8 @@ module.exports = function (api) {
       ],
     ],
     plugins: [
-      ["@babel/plugin-transform-runtime", { regenerator: true }], // optional but helps with async/await
+      ["@babel/plugin-transform-runtime", { regenerator: true }],
+      "react-native-reanimated/plugin", // 👈 needed for navigation + animations
     ],
   };
 };

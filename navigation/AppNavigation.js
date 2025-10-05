@@ -17,7 +17,7 @@ import HistoryScreen from '../screens/main/HistoryScreen';
 import SettingsScreen from '../screens/main/SettingsScreen';
 import CameraScreen from '../screens/CameraScreen';
 import PersonalInfoScreen from '../screens/settings/PersonalInfoScreen';
-import ConnectToMetamaskScreen from '../screens/settings/ConnectToMetamaskScreen';
+import ConnectWalletScreen from '../screens/settings/ConnectWalletScreen';
 import AvatarCameraScreen from '../screens/camera/AvatarCamerScreen';
 import VCFormScreen from '../screens/vc/VCFormScreen';
 import FaceCaptureScreen from '../screens/camera/FaceCaptureScreen';
@@ -77,6 +77,7 @@ export default function AppNavigation() {
             <Stack.Screen name="AvatarCamera" component={AvatarCameraScreen} options={{ headerShown: false }} />
             <Stack.Screen name="VerifyAccount" component={VerifyAccount} options={{ title: "Verify Account" }} />
             <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} />
+            <Stack.Screen name="ConnectWallet" component={ConnectWalletScreen} />
             {/* <Stack.Screen name="ConnectToMetamask" component={ConnectToMetamaskScreen} options={{ title: "Connect to Metamask" }}/> */}
 
             {/* VC Request Flow */}

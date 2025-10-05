@@ -18,18 +18,21 @@ import { s, vs } from "react-native-size-matters";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { uploadSelfie, uploadId } from "../../features/photo/photoSlice";
-import { createVCRequest } from "../../features/vcRequest/vcSlice";
+// import { createVCRequest } from "../../features/vcRequest/vcSlice";
 
+import { createVerificationRequest } from "../../features/verification/verificationSlice";
 
 export default function VerifyAccount() {
     const dispatch = useDispatch();
-// For VC request state (final submission)
-    const { isLoading: vcLoading, isError: vcError, message: vcMessage } = useSelector(
-    (state) => state.vc
-    );
-    
+// // For VC request state (final submission)
+//     const { isLoading: vcLoading, isError: vcError, message: vcMessage } = useSelector(
+//     (state) => state.vc
+//     );
+  const { isLoading: verificationLoading, isError: verificationError, message: verificationMessage } = useSelector(
+  (state) => state.verification
+  );
     const { user } = useSelector((state) => state.auth);
-    console.log("Current user:", user);
+    
     // For photo uploads (selfie & ID)
     const { isLoading: photoLoading, isError: photoError, message: photoMessage } = useSelector(
     (state) => state.photo
@@ -95,12 +98,15 @@ export default function VerifyAccount() {
     }
 
     // Submit verification request
-    await dispatch(createVCRequest({
-      personal,
-      education,
-      selfieImageId: selfieRes?.id || selfieRes?._id || null,
-      idImageId: idRes?.id || idRes?._id || null,
-    })).unwrap();
+    await dispatch(
+      createVerificationRequest({
+        personal,
+        education,
+        selfieImageId: selfieRes?.id || selfieRes?._id || null,
+        idImageId: idRes?.id || idRes?._id || null,
+      })
+    ).unwrap();
+
 
     alert("✅ Verification submitted successfully!");
     setShowConfirm(false);
@@ -447,17 +453,16 @@ export default function VerifyAccount() {
       {idUri && (
         <Image source={{ uri: idUri }} style={styles.modalPreview} />
       )}
-        <TouchableOpacity
+      <TouchableOpacity
         style={[styles.button, { marginTop: 20 }]}
         onPress={handleSubmit}
-        disabled={vcLoading || photoLoading}
-        >
+        disabled={verificationLoading || photoLoading}
+      >
+        <Text style={styles.btnText}>
+          {verificationLoading || photoLoading ? "Submitting..." : "Confirm & Submit"}
+        </Text>
+      </TouchableOpacity>
 
-            <Text style={styles.btnText}>
-            {vcLoading || photoLoading ? "Submitting..." : "Confirm & Submit"}
-            </Text>
-
-        </TouchableOpacity>
 
     </ScrollView>
   </View>

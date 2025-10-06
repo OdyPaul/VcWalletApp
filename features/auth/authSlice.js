@@ -81,9 +81,9 @@ export const logout = createAsyncThunk("auth/logout", async () => {
 // ✅ Update DID (wallet address)
 export const updateUserDID = createAsyncThunk(
   "auth/updateUserDID",
-  async ({ userId, did, token }, thunkAPI) => {
+  async ({ userId, walletAddress, token }, thunkAPI) => {
     try {
-      const updatedUser = await authService.updateUserDID(userId, did, token);
+      const updatedUser = await authService.updateUserDID(userId, walletAddress, token);
       return updatedUser;
     } catch (error) {
       const message =

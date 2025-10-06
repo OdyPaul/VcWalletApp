@@ -23,6 +23,8 @@ import { logout } from '../../features/auth/authSlice';
 import { clearAvatar } from "../../features/photo/avatarSlice";
 import ConfirmVerifyModal from "../../components/modals/VerifyProfileModal";
 import VerifyFirstModal from "../../components/modals/VerifyFirstModal";
+import ConfirmUpdateDid from "../../components/modals/ConfirmUpdateDid";
+import { useRoute } from "@react-navigation/native";
 import {
   getAvatar,
   uploadAvatar,
@@ -43,11 +45,20 @@ export default function SettingsScreen({ navigation }) {
   const displayUri = previewUri || avatar?.uri;
   const [confirmVisible, setConfirmVisible] = useState(false);
   const [verifyFirstVisible, setVerifyFirstVisible] = useState(false);
+  const [updateDidVisible, setUpdateDidVisible] = useState(false);
+  const [pendingWalletAddress, setPendingWalletAddress] = useState(null);
+  const route = useRoute();
 
-  // Fetch avatar when screen is focused
-  useEffect(() => {
-    if (isFocused) dispatch(getAvatar());
-  }, [isFocused, dispatch]);
+useEffect(() => {
+  if (route.params?.triggerVerifyModal) {
+    setVerifyFirstVisible(true);
+  }
+}, [route.params]);
+
+  // // Fetch avatar when screen is focused
+  // useEffect(() => {
+  //   if (isFocused) dispatch(getAvatar());
+  // }, [isFocused, dispatch]);
 
   // Take photo
   const takePhoto = () => {
@@ -155,7 +166,7 @@ const handleLogout = async () => {
             <Image
               source={{ uri: displayUri }}
               style={styles.avatar}
-              onError={() => dispatch({ type: "avatar/clearAvatar" })}
+              // onError={() => dispatch({ type: "avatar/clearAvatar" })}
             />
           ) : (
             <View style={[styles.avatar, styles.placeholder]}>
@@ -203,7 +214,8 @@ const handleLogout = async () => {
                 "You need to connect your wallet before accessing your profile.",
                 [
                   { text: "Cancel", style: "cancel" },
-                  { text: "Connect Wallet", onPress: () => navigation.navigate("ConnectWallet") },
+                  { text: "Connect Wallet", 
+                    onPress: () => navigation.navigate("ConnectWallet") },
                 ]
               );
             } else if (user) {
@@ -215,20 +227,32 @@ const handleLogout = async () => {
           <Text style={[styles.optionText, { color: colors.text }]}>Profile</Text>
         </TouchableOpacity>
 
-        {/* Connect Wallet */}
-        <TouchableOpacity
-          style={[styles.option, { borderBottomColor: colors.border }]}
-          onPress={() => navigation.navigate("ConnectWallet")}
-        >
-          <Ionicons name="wallet-outline" size={20} color={colors.text} />
-          <View style={{ flex: 1 }}>
-            <Text style={[styles.optionText, { color: colors.text }]}>Connect Wallet</Text>
-            <Text style={{ color: colors.sub, fontSize: 13, marginTop: 2 }}>
-              {user?.did || "Not linked"}
-            </Text>
-          </View>
-          <Ionicons name="create-outline" size={18} color={colors.sub} />
-        </TouchableOpacity>
+          {/* Connect Wallet */}
+            <TouchableOpacity
+              style={[styles.option, { borderBottomColor: colors.border }]}
+              onPress={() => {
+                if (user?.did) {
+                  // ✅ Already has a DID — show confirmation modal
+                  setUpdateDidVisible(true);
+                } else {
+                  // 🆕 No DID yet — go directly to connect wallet
+                  navigation.navigate("ConnectWallet");
+                }
+              }}
+            >
+              <Ionicons name="wallet-outline" size={20} color={colors.text} />
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.optionText, { color: colors.text }]}>Connect Wallet</Text>
+                <Text style={{ color: colors.sub, fontSize: 13, marginTop: 2 }}>
+                  {user?.did
+                    ? `${user.did.slice(0, 6)}...${user.did.slice(-4)}`
+                    : "Not linked"}
+                </Text>
+              </View>
+              <Ionicons name="create-outline" size={18} color={colors.sub} />
+            </TouchableOpacity>
+
+
 
         {/* Referral */}
         <TouchableOpacity style={[styles.option, { borderBottomColor: colors.border }]}>
@@ -291,6 +315,15 @@ const handleLogout = async () => {
           navigation.navigate("VerifyAccount");
         }}
       />
+        <ConfirmUpdateDid
+          visible={updateDidVisible}
+          onClose={() => setUpdateDidVisible(false)}
+          onConfirm={() => {
+            setUpdateDidVisible(false);
+            navigation.navigate("ConnectWallet");
+          }}
+        />
+
     </ScrollView>
   );
 }

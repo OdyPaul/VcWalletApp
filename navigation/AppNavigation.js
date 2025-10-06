@@ -78,6 +78,8 @@ export default function AppNavigation() {
             <Stack.Screen name="VerifyAccount" component={VerifyAccount} options={{ title: "Verify Account" }} />
             <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} />
             <Stack.Screen name="ConnectWallet" component={ConnectWalletScreen} />
+            
+            
             {/* <Stack.Screen name="ConnectToMetamask" component={ConnectToMetamaskScreen} options={{ title: "Connect to Metamask" }}/> */}
 
             {/* VC Request Flow */}

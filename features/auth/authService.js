@@ -91,6 +91,7 @@ const getUser = async (token) => {
 // -----------------------------------------------------------------------------
 // 🪪 Update user DID
 // -----------------------------------------------------------------------------
+// 🪪 Update user DID
 const updateUserDID = async (userId, walletAddress, token) => {
   if (!token) throw new Error("Missing auth token");
 
@@ -103,16 +104,26 @@ const updateUserDID = async (userId, walletAddress, token) => {
 
   const { data } = await axios.put(
     `${API_URL}/api/mobile/${userId}/did`,
-    { walletAddress }, // 👈 backend expects this
+    { walletAddress }, // can be string or null
     config
   );
 
-  if (data?.user) {
-    await AsyncStorage.setItem("user", JSON.stringify(data.user));
-    return data.user;
+  const updatedUser = data?.user || data;
+
+  if (updatedUser) {
+    // ✅ Sync storage: remove if disconnected
+    if (!updatedUser.walletAddress) {
+      console.log("🧹 Removing wallet info from AsyncStorage");
+      await AsyncStorage.removeItem("user");
+      await AsyncStorage.setItem("user", JSON.stringify(updatedUser));
+    } else {
+      await AsyncStorage.setItem("user", JSON.stringify(updatedUser));
+    }
   }
 
-  return null;
+  return updatedUser;
 };
+
+
 
 export default { register, login, logout, getUser, updateUserDID };

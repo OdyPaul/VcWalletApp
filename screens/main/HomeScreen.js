@@ -1,25 +1,30 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { useSelector } from "react-redux";
 import UserAvatar from "../../components/UserAvatar";
 import NotificationButton from "../../components/NotificationButton";
 import { s, vs } from "react-native-size-matters";
 import { light, dark } from "../../theme/color";
 import { useNavigation } from "@react-navigation/native";
+import NewUserVerifyModal from "../../components/modals/NewUserVerify";
 
 export default function HomeScreen() {
   const user = useSelector((state) => state.auth.user);
   const darkMode = useSelector((state) => state.settings.darkMode);
   const colors = darkMode ? dark : light;
   const navigation = useNavigation();
-// After filling VC form → go to face capture
-  const handleNext = () => {
-  if (!type || !course) {
-    Alert.alert("Error", "Type and Course are required");
-    return;
-  }
-  navigation.navigate("FaceCapture", { type, course, yearGraduated });
-};
+
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
+
+      useEffect(() => {
+        if (!user) return;
+
+        // 🧠 If new user (no DID or not verified) → show welcome modal
+        if (!user.did || user.verified !== "verified") {
+          setShowVerifyModal(true);
+        }
+      }, [user]);
+
 
   return (
     <View style={[styles.container, { backgroundColor: colors.bg }]}>
@@ -35,7 +40,7 @@ export default function HomeScreen() {
         <NotificationButton />
       </View>
 
-      {/* VC Request Container */}
+      {/* VC Request */}
       <TouchableOpacity
         style={[styles.dashedBox, { borderColor: colors.sub }]}
         onPress={() => navigation.navigate("VCForm")}
@@ -44,6 +49,23 @@ export default function HomeScreen() {
           + Add a Credential
         </Text>
       </TouchableOpacity>
+
+      {/* Verify Modal */}
+      <NewUserVerifyModal
+        visible={showVerifyModal}
+        user={user}
+        onClose={() => setShowVerifyModal(false)}
+        onConnectWallet={() => {
+          setShowVerifyModal(false);
+          navigation.navigate("ConnectWallet", { from: "Home" }); // ✅ added param
+        }}
+
+        onVerify={() => {
+          setShowVerifyModal(false);
+          navigation.navigate("VerifyAccount");
+        }}
+      />
+
     </View>
   );
 }
